@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Админка — Хранилище паролей{% endblock %}
+{% block content %}
+<div class="dashboard">
+    <h2>Административная панель</h2>
+    <p style="color: var(--clr-text-secondary); margin-bottom: 24px;">Пользователь: <strong>{{ username }}</strong></p>
+
+    <div class="admin-stats">
+        <div class="stat-card">
+            <h3>Всего пользователей</h3>
+            <p class="stat-number">{{ users|length }}</p>
+        </div>
+        <div class="stat-card">
+            <h3>Всего паролей</h3>
+            <p class="stat-number">{{ all_passwords|length }}</p>
+        </div>
+    </div>
+
+    <div class="admin-section">
+        <h3>Список пользователей</h3>
+        <div class="users-list">
+            {% for user in users %}
+            <div class="user-item">
+                <span class="user-icon">U</span>
+                <span class="user-name">{{ user }}</span>
+                {% if user == 'admin' %}
+                <span class="admin-badge">админ</span>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="admin-section">
+        <h3>Общий журнал паролей</h3>
+        {% if all_passwords %}
+        <div class="passwords-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Пользователь</th>
+                        <th>Сервис</th>
+                        <th>Пароль</th>
+                        <th>Длина</th>
+                        <th>Сложность</th>
+                        <th>Создан</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pwd in all_passwords %}
+                    <tr>
+                        <td><strong>{{ pwd.username }}</strong></td>
+                        <td>{{ pwd.service }}</td>
+                        <td class="password-cell">
+                            <span class="password-hidden">••••••••</span>
+                            <span class="password-visible" style="display:none;">{{ pwd.password }}</span>
+                            <button class="btn-toggle" onclick="togglePassword(this)">👁</button>
+                            <button class="btn-copy" onclick="copyPassword('{{ pwd.password|e }}')">📋</button>
+                        </td>
+                        <td>{{ pwd.length }}</td>
+                        <td>{{ pwd.complexity }}</td>
+                        <td>{{ pwd.timestamp[:16] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="no-passwords">В базе нет паролей.</p>
+        {% endif %}
+    </div>
+
+    <div style="margin-top: 24px;">
+        <a href="{{ url_for('dashboard') }}" class="btn">← Вернуться в панель</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Панель{% endblock %}
+{% block content %}
+<h2>Генератор паролей</h2>
+
+<form method="POST">
+    <div class="form-group">
+        <label>Сервис:</label>
+        <input type="text" name="service" required>
+    </div>
+    <div class="form-group">
+        <label>Длина (6–64): <span id="len">12</span></label>
+        <input type="range" name="length" min="6" max="64" value="12"
+               oninput="document.getElementById('len').innerText = this.value">
+    </div>
+    <div class="form-group">
+        <label>Символы:</label><br>
+        <label><input type="checkbox" name="uppercase" checked> A–Z</label><br>
+        <label><input type="checkbox" name="lowercase" checked> a–z</label><br>
+        <label><input type="checkbox" name="digits" checked> 0–9</label><br>
+        <label><input type="checkbox" name="special" checked> !@#</label>
+    </div>
+    <button type="submit" class="btn btn-primary">Создать и сохранить</button>
+</form>
+
+<hr>
+
+<h2>Ваши пароли</h2>
+{% if passwords %}
+    <table>
+        <tr>
+            <th>Сервис</th>
+            <th>Пароль</th>
+            <th>Длина</th>
+            <th>Символы</th>
+            <th>Дата</th>
+        </tr>
+        {% for p in passwords %}
+        <tr>
+            <td>{{ p.service }}</td>
+            <td>
+                <span id="pw-{{ loop.index }}">{{ p.password[:3] }}***</span>
+                <button onclick="document.getElementById('pw-{{ loop.index }}').innerText = '{{ p.password }}'">Показать</button>
+                <button onclick="copy('{{ p.password }}')">Копировать</button>
+            </td>
+            <td>{{ p.length }}</td>
+            <td>{{ p.complexity }}</td>
+            <td>{{ p.timestamp[:16] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% else %}
+    <p>У вас пока нет сохранённых паролей.</p>
+{% endif %}
+{% endblock %}

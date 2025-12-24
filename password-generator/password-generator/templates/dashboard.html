@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Панель — Хранилище паролей{% endblock %}
+{% block content %}
+<div class="dashboard">
+    <h2>Генератор паролей</h2>
+
+    <div class="generator-box">
+        <form method="POST">
+            <div class="form-group">
+                <label for="service">Название сервиса</label>
+                <input type="text" id="service" name="service" placeholder="например: github.com" required>
+            </div>
+
+            <div class="form-group">
+                <label for="length">Длина: <span id="length-value">12</span></label>
+                <input type="range" id="length" name="length" min="6" max="64" value="12"
+                       oninput="document.getElementById('length-value').textContent = this.value">
+            </div>
+
+            <div class="complexity-options">
+                <h4>Наборы символов</h4>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" name="uppercase" checked> Заглавные</label>
+                    <label><input type="checkbox" name="lowercase" checked> Строчные</label>
+                    <label><input type="checkbox" name="digits" checked> Цифры</label>
+                    <label><input type="checkbox" name="special" checked> Символы</label>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Создать и сохранить</button>
+        </form>
+    </div>
+
+    <div class="passwords-section">
+        <h2>Сохранённые данные</h2>
+
+        {% if passwords %}
+        <div class="passwords-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Сервис</th>
+                        <th>Пользователь</th>
+                        <th>Пароль</th>
+                        <th>Длина</th>
+                        <th>Сложность</th>
+                        <th>Создан</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pwd in passwords %}
+                    <tr>
+                        <td>{{ pwd.service }}</td>
+                        <td>{{ username }}</td>
+                        <td class="password-cell">
+                            <span class="password-hidden">••••••••</span>
+                            <span class="password-visible" style="display:none;">{{ pwd.password }}</span>
+                            <button class="btn-toggle" onclick="togglePassword(this)">👁</button>
+                            <button class="btn-copy" onclick="copyPassword('{{ pwd.password|e }}')">📋</button>
+                        </td>
+                        <td>{{ pwd.length }}</td>
+                        <td>{{ pwd.complexity }}</td>
+                        <td>{{ pwd.timestamp[:16] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="no-passwords">Нет сохранённых данных. Создайте первый пароль.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

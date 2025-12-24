@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Хранилище паролей{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <h1 class="logo">ХРАНИЛИЩЕ</h1>
+            {% if session.username %}
+            <div class="nav-links">
+                <span class="username">{{ session.username }}</span>
+                {% if session.username == 'admin' %}
+                <a href="{{ url_for('admin_panel') }}" class="btn btn-admin">Админка</a>
+                {% endif %}
+                <a href="{{ url_for('logout') }}" class="btn btn-logout">Выйти</a>
+            </div>
+            {% endif %}
+        </div>
+    </nav>
+
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Хранилище паролей — надёжное управление учётными данными</p>
+    </footer>
+
+    <script>
+        function togglePassword(button) {
+            const cell = button.closest('td');
+            const hidden = cell.querySelector('.password-hidden');
+            const visible = cell.querySelector('.password-visible');
+            if (hidden.style.display === 'none') {
+                hidden.style.display = 'inline';
+                visible.style.display = 'none';
+                button.textContent = '👁';
+            } else {
+                hidden.style.display = 'none';
+                visible.style.display = 'inline';
+                button.textContent = '🔒';
+            }
+        }
+
+        function copyPassword(password) {
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(password).then(() => {
+                    alert('Скопировано в буфер обмена.');
+                }).catch(() => {
+                    fallbackCopy(password);
+                });
+            } else {
+                fallbackCopy(password);
+            }
+        }
+
+        function fallbackCopy(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                alert('Скопировано в буфер обмена.');
+            } catch (err) {
+                alert('Не удалось скопировать. Скопируйте вручную.');
+            }
+            document.body.removeChild(textarea);
+        }
+    </script>
+</body>
+</html>
