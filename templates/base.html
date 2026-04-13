@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Хранилище паролей{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="navbar">
+        <strong>ХРАНИЛИЩЕ ПАРОЛЕЙ</strong>
+        {% if session.username %}
+            Привет, {{ session.username }}!
+            {% if session.username == 'admin' %}
+                <a href="{{ url_for('admin_panel') }}">Админка</a>
+            {% endif %}
+            <a href="{{ url_for('logout') }}">Выйти</a>
+        {% endif %}
+    </div>
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, msg in messages %}
+            <div class="alert alert-{{ category }}">{{ msg }}</div>
+        {% endfor %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </div>
+    <footer>&copy; 2025 Хранилище паролей</footer>
+    <script>
+    function copy(text) {
+        const el = document.createElement('textarea');
+        el.value = text;
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand('copy');
+        document.body.removeChild(el);
+        alert('Скопировано!');
+    }
+    </script>
+</body>
+</html>

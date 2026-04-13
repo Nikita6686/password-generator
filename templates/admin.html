@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Админка{% endblock %}
+{% block content %}
+<h2>Админ-панель</h2>
+<h3>Статистика</h3>
+<ul>
+    <li>Всего пользователей: {{ users|length }}</li>
+    <li>Всего паролей: {{ all_passwords|length }}</li>
+</ul>
+<h3>Пользователи</h3>
+<ul>
+    {% for u in users %}
+    <li>{{ u }} {% if u == 'admin' %}<strong>(админ)</strong>{% endif %}</li>
+    {% endfor %}
+</ul>
+<h3>Все пароли</h3>
+{% if all_passwords %}
+<table>
+    <tr>
+        <th>Пользователь</th>
+        <th>Сервис</th>
+        <th>Пароль</th>
+        <th>Длина</th>
+        <th>Символы</th>
+    </tr>
+    {% for p in all_passwords %}
+    <tr>
+        <td>{{ p.username }}</td>
+        <td>{{ p.service }}</td>
+        <td>
+            <span>{{ p.password[:3] }}***</span>
+            <button onclick="copy('{{ p.password }}')">Копировать</button>
+        </td>
+        <td>{{ p.length }}</td>
+        <td>{{ p.complexity }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>Нет паролей.</p>
+{% endif %}
+<br>
+<a href="{{ url_for('dashboard') }}" class="btn">Назад в панель</a>
+{% endblock %}
